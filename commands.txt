@@ -1,6 +1,7 @@
 geth attach http://141.19.96.203:8545
 
-personal.unlockAccount('0x670Aab912cC21274d736A188Bd61dfd791A93c13')
+personal.unlockAccount('0x670Aab912cC21274d736A188Bd61dfd791A93c13')  //Adresse Felix
+personal.unlockAccount('0x37D960E44acC2FD6154b178f8386B59ee000927b')  //Adresse Chris
 
 loadScript("/media/1726592/FK_STICK_KE/Labor_PES/greeter.js")
 
