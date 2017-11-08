@@ -1,18 +1,28 @@
-geth attach http://141.19.96.203:8545
+> geth attach http://141.19.96.203:8545   //login auf server
 
-personal.unlockAccount('0x670Aab912cC21274d736A188Bd61dfd791A93c13')  //Adresse Felix
-personal.unlockAccount('0x37D960E44acC2FD6154b178f8386B59ee000927b')  //Adresse Chris
+> personal.unlockAccount('0x670Aab912cC21274d736A188Bd61dfd791A93c13')  //Adresse Felix
+> personal.unlockAccount('0x37D960E44acC2FD6154b178f8386B59ee000927b')  //Adresse Chris
 
-loadScript("/media/1726592/FK_STICK_KE/Labor_PES/greeter.js")
 
-greeter = web3.eth.contract([{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_newgreeting","type":"string"}],"name":"changestring","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"greet","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_greeting","type":"string"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]).at('0xD1606bf5a538EED8a4242583A40c70BfB002272A');
 
-greeter.greet()
+//--------------------------------greeter--------------------------------------------
+loadScript("/media/1726592/FK_STICK_KE/Labor_PES/greeter.js")   // Greeter erstellen
 
-greeter.changestring.sendTransaction("newstring", {from: '0x670Aab912cC21274d736A188Bd61dfd791A93c13'})
+> greeter = web3.eth.contract([{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_newgreeting","type":"string"}],"name":"changestring","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"greet","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"_greeting","type":"string"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]).at('0xD1606bf5a538EED8a4242583A40c70BfB002272A'); //greeter einer variablen zuweißen
 
-greeter.greet()
+> greeter.greet()   //Funktion lokal aufrufen
 
-greeter.kill.sendTransaction({from:'0x670Aab912cC21274d736A188Bd61dfd791A93c13'})
+> greeter.changestring.sendTransaction("newstring", {from: '0x670Aab912cC21274d736A188Bd61dfd791A93c13'})   //Funktion in Greeter auf Block aufrufen
 
-token.transfer.sendTransaction('0x670Aab912cC21274d736A188Bd61dfd791A93c13' , 10,{from:eth.accounts[0]})
+> greeter.greet()   //Funktion lokal aufrufen
+
+> greeter.kill.sendTransaction({from:'0x670Aab912cC21274d736A188Bd61dfd791A93c13'}) //contract löschen
+//--------------------------------------------------------------------------------------------
+
+
+//--------------------------------Token nutzen---------------------------------------
+
+> token = web3.eth.contract([{...........}]).at('Adresse des Contracts'); //Contract einer variablen zuweißen
+
+> token.transfer.sendTransaction('0x670Aab912cC21274d736A188Bd61dfd791A93c13' , 10,{from:eth.accounts[0]})  //From ist wichtig für Signatur
+//---------------------------------------------------------------------------------------
