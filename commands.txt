@@ -14,3 +14,5 @@ greeter.changestring.sendTransaction("newstring", {from: '0x670Aab912cC21274d736
 greeter.greet()
 
 greeter.kill.sendTransaction({from:'0x670Aab912cC21274d736A188Bd61dfd791A93c13'})
+
+token.transfer.sendTransaction('0x670Aab912cC21274d736A188Bd61dfd791A93c13' , 10,{from:eth.accounts[0]})
