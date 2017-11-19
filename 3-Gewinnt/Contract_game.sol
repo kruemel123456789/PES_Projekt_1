@@ -20,14 +20,16 @@ contract game is mortal
 {
 
  // Zum Debuggen (An -> 1 / Aus -> 0)
-  uint256 constant debug = 1;
+  uint256 constant debug = 0;
 
   //Spieler limit
   uint256 public playerLim = 2;
   // Spieleranzahl
   uint256 public playerCount = 0;
+  //Unlockanzahl
+  uint256 public unlockCount = 0;
   // Einsatz + Pfand
-  uint256 public minBid = 100;
+  uint256 public minBid = 10 * 1000000000000000000;
   // Speicherung der Spieleradressen
   address[3] public storagePlayer;
   //Speichern des Tips
@@ -38,7 +40,7 @@ contract game is mortal
   //gewinn Speichern
   uint256 public storageWinnings =0;
   //pfandbetrag
-  uint256 public deposit = 90;
+  uint256 public deposit = 9 * 1000000000000000000;
 
   mapping (address => uint256) public balanceOf;
 
@@ -48,13 +50,16 @@ contract game is mortal
 
    // Ausgabe zum Debuggen
    event debugInfo(string t);
+   
+   //Aufruf zum entschlüsseln
+   event pleaseUnlock(string u);
 
    //Spieler hat das Spiel gewonnen
    event winTheGame(string w, uint256 s, string asd);
 
    // Spieler melden sich an
    //@param value  - Einsatz + Pfand
-   function join_game(uint256 tipNumber) payable{
+   function join_game(uint256 tipNumber, string passphrase) payable{
        uint256 value = 100;
        if (debug == 0){
            value = msg.value;
@@ -78,24 +83,47 @@ contract game is mortal
 
        }
        else if(playerLim < playerCount){
-           if(debug == 1){ debugInfo("Noch zu wenig Spieler");return;}
-           if(debug == 0){ revert(); }
+           if(debug == 1){ debugInfo("Zu viele Spieler");return;}
+           if(debug == 0){ revert();}
        }
 
        storagePlayer[playerCount] = msg.sender; //
-       storageTip[playerCount] = tipNumber;
-       encoding(tipNumber);
+       storageTipEncode[playerCount] = encoding(tipNumber,passphrase);
        jackpot(value);
        join_success(msg.sender);
 
        if (playerLim == playerCount){
            if(debug == 1){ debugInfo("Spiel kann los gehen!");  }
-           playGame();
+           pleaseUnlock("Bitte unlockTips() aufrufen");
+           
        }
-       else{
-            playerCount = playerCount + 1;
-       }
+        playerCount = playerCount + 1;
 
+   }
+   
+   function unlockTips(uint256 tipNumber, string passphrase) payable{
+       //Jeder Spieler muss entschlüsseln
+       uint256 playerNum = 99;
+       for (uint256 i=0; i <= playerLim;i++){
+           if(storagePlayer[i] == msg.sender){
+                playerNum = i;
+           }
+       }
+       if (playerNum == 99)
+       {
+            if(debug == 1){  debugInfo("Spieler ist kein Teilnehmer"); return;}
+            if(debug == 0){ revert(); }
+       }
+       storageTip[playerNum] = decoding(tipNumber, passphrase, storageTipEncode[playerNum]);
+       unlockCount +=1;
+       //Bei Erfolg gibts Pfand zurück
+       returnDeposit(playerNum);
+       //wenn alle drei entschtlüsselt haben, gewinn auszahlen
+       if(unlockCount == 3){
+            dreiGewinnt();
+            returnWinnings();
+            resetGame();
+       }
    }
 
    //Gesamt Einsatz des Spiels (Jackpot)
@@ -113,33 +141,45 @@ contract game is mortal
    }
 
    // krypthografisches commitmentValue
-   function encoding(uint256 number){
-
-    bytes32 hash = keccak256(number);
-    storageTipEncode[playerCount] = hash;
+   function encoding(uint256 number, string passphrase) private returns (bytes32){
+    return  keccak256(number, passphrase, msg.sender);
    }
 
-   function decoding(){
-
+   function decoding(uint256 number, string passphrase, bytes32 oldHash) private returns (uint256 tip){
+       bytes32 newUnlock= keccak256(number, passphrase, msg.sender);
+       if (newUnlock == oldHash){
+           if(debug == 1){  debugInfo("Unlock erfolgreich");}
+            return number;
+       }
+       else
+       {
+            if(debug == 1){  debugInfo("Falsche Nummer oder passphrase"); return;}
+            if(debug == 0){ revert(); }
+       }
    }
 
 
-   function returnWinnings() {
-       balanceOf[storagePlayer[storageWinningPlayer]] += storageWinnings;
-       storageWinnings = 0;
-       if(debug == 1){    winTheGame("Spieler " , storageWinningPlayer , " hat gewonnen");}
+   function returnWinnings()payable {
+       storagePlayer[storageWinningPlayer].transfer(storageWinnings);
+       winTheGame("Spieler " , storageWinningPlayer , " hat gewonnen");
    }
 
-   function returnDeposit(){
-        for (uint256 i=0; i<=playerLim;i++){
-            balanceOf[storagePlayer[i]] += deposit;
-        }
+   function returnDeposit(uint256 playerNum)payable{
+            storagePlayer[playerNum].transfer(deposit);
    }
+   
+   function resetGame(){
+      // Spieleranzahl
+      playerCount = 0;
+      //Unlockanzahl
+      unlockCount = 0;
 
-      function playGame(){
-       dreiGewinnt();
-       returnWinnings();
-       returnDeposit();
+      delete storagePlayer;
+      delete storageTip;
+      delete storageTipEncode;
+         
+      //gewinn Speichern
+      storageWinnings =0;
    }
 
 }
