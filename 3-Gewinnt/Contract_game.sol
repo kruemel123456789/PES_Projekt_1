@@ -11,10 +11,11 @@ contract mortal {
    function mortal() public { owner = msg.sender; }
 
    /* Function to recover the funds on the contract */
-   function kill() public { if (msg.sender == owner) selfdestruct(owner); }
+   function kill() public {
+       if (msg.sender == owner) selfdestruct(owner);
+       else revert();
+   }
 }
-
-
 
 contract game is mortal
 {
@@ -34,7 +35,7 @@ contract game is mortal
   bytes32[3] private storageTipEncode;
   uint256[3] private unlockDone;
   //Speicherung des gewonnen Spielers
-  uint256 private storageWinningPlayer;
+  uint256  storageWinningPlayer ;
   //gewinn Speichern
   uint256 private storageWinnings = 0;
   // Einsatz + Pfand
@@ -47,22 +48,25 @@ contract game is mortal
    event join_success(address player);
 
    // Ausgabe zum Debuggen
-   event debugInfo(string t);
-   
+   //event debugInfo(string t);
+
    //Aufruf zum entschlüsseln
    event pleaseUnlock(string u);
 
+   //Erfolgreiches Unlocken
+   event Unlock_success(address player);
+
    //Spieler hat das Spiel gewonnen
    event winTheGame(string w, uint256 s, string asd);
-   
-   
-   function greateHash(uint256 number, string passphrase) constant returns (bytes32 hash){
+
+
+   function greateHash(uint256 number, string passphrase) public constant returns (bytes32 hash){
        return (keccak256(number, passphrase, msg.sender));
    }
 
    // Spieler melden sich an
    //@param value  - Einsatz + Pfand
-   function join_game(bytes32 hash) payable public {
+   function join_game(bytes32 hash ) payable public  returns (string s) {
        uint256 value = 100;
        if (debug == 0){
            value = msg.value;
@@ -72,21 +76,21 @@ contract game is mortal
         for (uint256 i=0; i <= playerLim;i++){
             if (storagePlayer[i] == msg.sender){
                  if(debug == 0){ revert(); }
-                 if(debug == 1){ debugInfo("Spieler schon vorhanden!" );return;}
+                 if(debug == 1){ return ("Spieler schon vorhanden!" );}
             }
         }
 
        if ( playerLim < playerCount && value < minBid) {
-          if(debug == 1){  debugInfo("Zu wenig Spieler und zu wenig Einsatz"); return;}
+          if(debug == 1){  return ("Zu wenig Spieler und zu wenig Einsatz");}
           if(debug == 0){ revert(); }
        }
        else if(value < minBid ){
-           if(debug == 1){ debugInfo("Zu wenig Einsatz gezahlt");return;}
+           if(debug == 1){ return("Zu wenig Einsatz gezahlt");}
            if(debug == 0){ revert(); }
 
        }
        else if(playerLim < playerCount){
-           if(debug == 1){ debugInfo("Zu viele Spieler");return;}
+           if(debug == 1){ return("Zu viele Spieler");}
            if(debug == 0){ revert();}
        }
 
@@ -96,43 +100,41 @@ contract game is mortal
        join_success(msg.sender);
 
        if (playerLim == playerCount){
-           if(debug == 1){ debugInfo("Spiel kann los gehen!");  }
-           pleaseUnlock("Bitte unlockTips() aufrufen");
-           
+          pleaseUnlock("Bitte unlockTips() aufrufen");
        }
         playerCount = playerCount + 1;
 
    }
-   
+
    function unlockTips(uint256 tipNumber, string passphrase) payable public {
        //nur möglich falls 3 Spieler
        if (playerLim > playerCount){
-           if(debug == 1){ debugInfo("Zu wenig Spieler zum entschlüsseln");  return;}
            if(debug == 0){ revert();}
-           
+
        }
        //Jeder Spieler muss entschlüsseln
        uint256 playerNum = 99;
-       for (uint256 i=0; i <= playerLim;i++){
+       for (uint256 i=0; i <= playerLim; i++){
            if(storagePlayer[i] == msg.sender){
                 playerNum = i;
            }
        }
        if (playerNum == 99)
        {
-            if(debug == 1){  debugInfo("Spieler ist kein Teilnehmer"); return;}
             if(debug == 0){ revert(); }
        }
-       
+
+
        if(unlockDone[0] != playerNum ||unlockDone[1] != playerNum ||unlockDone[2] != playerNum){
            storageTip[playerNum] = decoding(tipNumber, passphrase, storageTipEncode[playerNum]);
            unlockCount +=1;
            unlockDone[unlockCount] = playerNum;
            //Bei Erfolg gibts Pfand zurück
            returnDeposit(playerNum);
+           Unlock_success(msg.sender);
         }
-       
-       
+
+
        //wenn alle drei entschtlüsselt haben, gewinn auszahlen
        if(unlockCount == playerLim+1){
             dreiGewinnt();
@@ -149,10 +151,10 @@ contract game is mortal
    // Spiel 3-Gewinnt
    function dreiGewinnt() private {
        uint256 sum = 0;
-     for (uint256 i=0; i<= playerLim;++i){
+     for (uint256 i=0; i <= playerLim; i++){
          sum += storageTip[i];
      }
-      storageWinningPlayer = sum % playerLim+1;
+      storageWinningPlayer = sum % (playerLim+1);
    }
 
    // krypthografisches commitmentValue
@@ -163,12 +165,10 @@ contract game is mortal
    function decoding(uint256 number, string passphrase, bytes32 oldHash) private returns (uint256 tip){
        bytes32 newUnlock= keccak256(number, passphrase, msg.sender);
        if (newUnlock == oldHash){
-           if(debug == 1){  debugInfo("Unlock erfolgreich");}
             return number;
        }
        else
        {
-            if(debug == 1){  debugInfo("Falsche Nummer oder passphrase"); return;}
             if(debug == 0){ revert(); }
        }
    }
@@ -182,8 +182,9 @@ contract game is mortal
    function returnDeposit(uint256 playerNum) private {
             storagePlayer[playerNum].transfer(deposit);
    }
-   
+
    function resetGame() private {
+
       // Spieleranzahl
       playerCount = 0;
       //Unlockanzahl
@@ -192,9 +193,8 @@ contract game is mortal
       delete storagePlayer;
       delete storageTip;
       delete storageTipEncode;
-         
+
       //gewinn Speichern
       storageWinnings =0;
    }
-
 }

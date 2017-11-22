@@ -30,3 +30,13 @@ loadScript("/media/1726592/FK_STICK_KE/Labor_PES/greeter.js")   // Greeter erste
 > eth.sendTransaction({from:'0x670Aab912cC21274d736A188Bd61dfd791A93c13',to:'0x37D960E44acC2FD6154b178f8386B59ee000927b',value: web3.toWei(10.0,"ether")})
 
 > spiel.kill.sendTransaction({from:'0x670Aab912cC21274d736A188Bd61dfd791A93c13'})
+
+
+--------------------------------------Events -----------------------------------
+var eventUnlock = spiel.pleaseUnlock()
+eventUnlock.watch(function(error, result){console.log(error, result)})
+
+
+spiel.join_game.sendTransaction("0x3da0fc4d1ef4b48923d08215fc9935d4b98962fd90d2c0f2ac8827b0ceb93416", {from:'0x37d960e44acc2fd6154b178f8386b59ee000927b', value: web3.toWei(1.0,"ether"), gas:1000000})
+
+spiel.unlockTips.sendTransaction(1,"abc",{from:'0x37d960e44acc2fd6154b178f8386b59ee000927b', gas:100000})
