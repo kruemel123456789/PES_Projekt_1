@@ -11,7 +11,7 @@ event_join_success.watch(function(error, result)
 {
   if(!error)
   {
-      console.log('Erfolgreiche Anmeldung'  + '( Spieler Adresse: ' + result.args.player + ' )' );
+      console.log('Erfolgreiche Anmeldung'  + '(Spieler Adresse: ' + result.args.player + ')' );
   }
   else
   {
@@ -39,7 +39,7 @@ event_Unlock_success.watch(function(error, result)
 {
   if(!error)
   {
-      console.log('Unlock war erfolgreich.'   + '( Spieler Adresse: ' + result.args.player + ' )' );
+      console.log('Unlock war erfolgreich.'   + '(Spieler Adresse: ' + result.args.player + ')' );
   }
   else{
       console.log('Unlock war nicht erfolgreich');
@@ -62,7 +62,7 @@ event_winTheGame.watch(function(error, result)
 
 
 var event_breakGame = game.breakGame()
-event_winTheGame.watch(function(error, result)
+event_breakGame.watch(function(error, result)
 {
   if(!error){
       console.log('Spiel nach 3 Minuten unterbrochen!');
@@ -75,7 +75,7 @@ event_winTheGame.watch(function(error, result)
 
 
 var event_resetSuccess = game.resetSuccess()
-event_winTheGame.watch(function(error, result)
+event_resetSuccess.watch(function(error, result)
 {
         if(!error)
         {
