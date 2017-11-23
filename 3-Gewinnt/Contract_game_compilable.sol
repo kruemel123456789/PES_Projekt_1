@@ -23,7 +23,7 @@ contract mortal {
 //Contract für das eigentlich Spiel, erbt von mortal
 contract game is mortal
 {
-	#region Variablen und Konstanten Deklaration
+	//region Variablen und Konstanten Deklaration
 	
 	// Zum Debuggen (An -> 1 / Aus -> 0)
 	uint256 constant debug = 0;
@@ -67,9 +67,9 @@ contract game is mortal
 	//Zeitpunkt, zu dem genung Mitspieler vorhanden sind
 	uint256 startTime;
 	
-	#endregion
+	//endregion
 
-	#region Events
+	//region Events
 	
 	/*
 	Event bei erfolgreicher Teilnahme am Spiel
@@ -104,9 +104,9 @@ contract game is mortal
 	*/
 	event resetSuccess();
 	
-	#endregion
+	//endregion
 
-	#region lokale Funktionen
+	//region lokale Funktionen
 
 	/*Erzeugung des Hashwerts
 	
@@ -128,9 +128,9 @@ contract game is mortal
 		return (keccak256(number, passphrase, sender));
 	}
 	
-	#endregion
+	//endregion
 	
-	#region globale Funktionen
+	//region globale Funktionen
 
     /*Beitritt zum Spiel
 	
@@ -345,9 +345,9 @@ contract game is mortal
 		}
 	}
    
-	#endregion
+	//endregion
    
-	#region private Funktionen
+	//region private Funktionen
 
 	/*Erstellung des Jackpots
 	
@@ -432,5 +432,5 @@ contract game is mortal
 		resetSuccess();
 	}
 
-	#endregion
+	//endregion
 }
