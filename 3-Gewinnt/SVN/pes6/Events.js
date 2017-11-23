@@ -3,7 +3,7 @@ var browser_ballot_sol_gameContract = web3.eth.contract([{"constant":false,"inpu
 
 
 //Addresse von dem Contract eintragen
-var game = browser_ballot_sol_gameContract.at('');  
+var game = browser_ballot_sol_gameContract.at('0x66802a6dc49e90a2b9501b9e05b5c5ae8c447fba');
 
 var event_join_success = game.join_success();
 event_join_success.watch(function(error, result)
