@@ -321,7 +321,7 @@ contract game is mortal
 				if((startTime + 3 minutes) <= now)
 				{
 					uint256 sum;
-					sum = (storageWinnings + deposit * ( (playerLim + 1) - unlockCount) )/ playerCount;
+					sum = (storageWinnings + deposit * ( (playerLim + 1) - unlockCount) )/ unlockCount;
 					for(uint256 a=0 ; a < unlockCount ; a++)
 					{
 						storagePlayer[unlockDone[a]].transfer(sum);
