@@ -29,7 +29,7 @@ contract game is mortal
 	uint256 constant debug = 0;
 
 	//Spielerlimit (0 -> 1 Spieler , 1 -> 2 Spieler , 2 -> 3 Spieler)
-	uint256 private playerLim = 1;
+	uint256 private playerLim = 2;
 
 	// Spieleranzahl
 	uint256 private playerCount = 0;
@@ -322,7 +322,7 @@ contract game is mortal
 		{
 			if(unlockCount < (playerLim + 1))
 			{
-				if((startTime + 3 minutes) <= now)
+				if((startTime + 5 minutes) <= now)
 				{
 					uint256 sum;
 					sum = (storageWinnings + deposit * ( (playerLim + 1) - unlockCount) )/ unlockCount;
