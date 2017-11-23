@@ -1,42 +1,86 @@
-var spiel = browser_ballot_sol_gameContract.at(contract.address);
 
-var event_join_success = spiel.join_success();
-event_join_success.watch(function(error, result){
-        if(!error){
-            console.log('Erfolgreiche Anmeldung'  + '( Spieler Adresse: ' + result.args.player + ' )' );
-        }
-        else{
-            console.log(error);
-        }
+var browser_ballot_sol_gameContract =
+//Ersetzten
+web3.eth.contract([{"constant":false,"inputs":[],"name":"kill","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"hash","type":"bytes32"}],"name":"join_game","outputs":[{"name":"s","type":"string"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":false,"inputs":[{"name":"tipNumber","type":"uint256"},{"name":"passphrase","type":"string"}],"name":"unlockTips","outputs":[],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[{"name":"number","type":"uint256"},{"name":"passphrase","type":"string"},{"name":"sender","type":"address"}],"name":"greateHash","outputs":[{"name":"hash","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"checkTime","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"name":"player","type":"address"}],"name":"join_success","type":"event"},{"anonymous":false,"inputs":[],"name":"pleaseUnlock","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"player","type":"address"}],"name":"Unlock_success","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"win","type":"uint256"}],"name":"winTheGame","type":"event"}]);
 
-    });
+
+//Addresse von dem Contract eintragen
+var game = browser_ballot_sol_gameContract.at('');
+
+var event_join_success = game.join_success();
+event_join_success.watch(function(error, result)
+{
+  if(!error)
+  {
+      console.log('Erfolgreiche Anmeldung'  + '( Spieler Adresse: ' + result.args.player + ' )' );
+  }
+  else
+  {
+      console.log('Fehler');
+  }
+
+});
 
 var event_pleaseUnlock = spiel.pleaseUnlock()
-event_pleaseUnlock.watch(function(error, result){
-        if(!error){
-            console.log('Unlock bitte jetzt!');
-        }
-        else{
-            console.log(error);
-        }
+event_pleaseUnlock.watch(function(error, result)
+{
+  if(!error)
+  {
+      console.log('Unlock bitte jetzt!');
+  }
+  else
+  {
+      console.log('Fehler');
+  }
 
-    });
+});
 
 var event_Unlock_success = spiel.Unlock_success()
-event_Unlock_success.watch(function(error, result){
-        if(!error){
-            console.log('Unlock war erfolgreich.'   + '( Spieler Adresse: ' + result.args.player + ' )' );
-        }
-        else{
-            console.log('Unlock war nicht erfolgreich');
-        }
+event_Unlock_success.watch(function(error, result)
+{
+  if(!error)
+  {
+      console.log('Unlock war erfolgreich.'   + '( Spieler Adresse: ' + result.args.player + ' )' );
+  }
+  else{
+      console.log('Unlock war nicht erfolgreich');
+  }
 
-    });
+});
 
 var event_winTheGame = spiel.winTheGame()
-event_winTheGame.watch(function(error, result){
-        if(!error){
-            console.log('Spieler ' + result.args.win +' hat gewonnen.');
+event_winTheGame.watch(function(error, result)
+{
+  if(!error)
+  {
+      console.log('Spieler ' + result.args.win +' hat gewonnen.');
+  }
+  else{
+      console.log('Fehler !');
+  }
+
+});
+
+
+var event_breakGame = spiel.breakGame()
+event_winTheGame.watch(function(error, result)
+{
+  if(!error){
+      console.log('Spiel nach 3 Minuten unterbrochen!');
+  }
+  else{
+      console.log('Fehler !');
+  }
+
+});
+
+
+var event_resetSuccess = spiel.resetSuccess()
+event_winTheGame.watch(function(error, result)
+{
+        if(!error)
+        {
+            console.log('Zurücksetzten war erfolgreich!');
         }
         else{
             console.log('Fehler !');
